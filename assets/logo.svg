@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Clean It">
+  <rect width="128" height="128" rx="32" fill="#0f766e"/>
+  <path d="M34 72c0-23 15-39 35-39 12 0 22 5 29 13L86 59c-4-5-9-8-16-8-10 0-18 8-18 21 0 14 8 22 19 22 8 0 14-4 18-10l12 12c-7 10-18 16-31 16-21 0-36-16-36-40Z" fill="#fff"/>
+  <path d="M31 26h68v11H31z" fill="#d7f64b" opacity=".95"/>
+</svg>

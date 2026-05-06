@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
+  <title>Admin | Clean It Diluciones</title>
+  <link rel="icon" href="assets/logo.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="app-body">
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="Volver a app pública">
+      <span class="brand-mark">CI</span>
+      <span>
+        <strong>Admin</strong>
+        <small>Productos, diluciones y accesos</small>
+      </span>
+    </a>
+    <nav class="top-actions" aria-label="Acciones">
+      <a class="ghost-btn" href="index.html">Vista pública</a>
+      <button id="logoutBtn" class="danger-btn" type="button" hidden>Salir</button>
+    </nav>
+  </header>
+
+  <main class="admin-layout">
+    <section class="admin-hero">
+      <p class="eyebrow">Panel de control</p>
+      <h1>Gestión de productos y dosis.</h1>
+      <p>Acá ajustás fichas, diluciones y permisos. En producción conviene usar Supabase; el modo local es útil para revisar la app, no para operar en serio.</p>
+    </section>
+
+    <div id="globalError" class="error-msg"></div>
+    <div id="globalSuccess" class="success-msg"></div>
+
+    <section id="authSection" class="auth-grid">
+      <article class="admin-card">
+        <h2>Ingresar</h2>
+        <form id="loginForm" class="form-grid">
+          <label>Email<input name="email" type="email" autocomplete="email" required placeholder="admin@cleanit.com" /></label>
+          <label>Contraseña<input name="password" type="password" autocomplete="current-password" required placeholder="••••••••" /></label>
+          <button class="primary-btn" type="submit">Entrar</button>
+          <p class="small-muted" id="demoHint"></p>
+        </form>
+      </article>
+      <article class="admin-card">
+        <h2>Crear cuenta admin</h2>
+        <form id="signupForm" class="form-grid">
+          <label>Email<input name="email" type="email" autocomplete="email" required placeholder="nuevo.admin@cleanit.com" /></label>
+          <label>Contraseña<input name="password" type="password" autocomplete="new-password" minlength="8" required placeholder="Mínimo 8 caracteres" /></label>
+          <button class="soft-btn" type="submit">Solicitar acceso</button>
+          <p class="small-muted">La cuenta queda pendiente hasta que un superadmin la apruebe. Para el primer admin, seguí el SQL del README.</p>
+        </form>
+      </article>
+    </section>
+
+    <section id="pendingSection" class="panel-card" hidden>
+      <h2>Cuenta pendiente</h2>
+      <p class="small-muted">Tu usuario existe, pero todavía no está aprobado como admin. Pedile al superadmin que lo apruebe desde este panel o desde Supabase.</p>
+      <button class="danger-btn" type="button" id="pendingLogoutBtn">Salir</button>
+    </section>
+
+    <section id="adminShell" class="admin-shell">
+      <div class="admin-toolbar">
+        <div class="left">
+          <span class="pill ready" id="adminIdentity">Admin</span>
+          <span class="pill" id="backendStatus">Backend</span>
+        </div>
+        <div class="right">
+          <button class="soft-btn" type="button" id="changePasswordBtn">Cambiar contraseña</button>
+          <button class="primary-btn" type="button" id="newProductBtn">Nuevo producto</button>
+        </div>
+      </div>
+
+      <nav class="admin-tabs" aria-label="Secciones del panel">
+        <button class="admin-tab active" type="button" data-admin-tab="productsView">Productos</button>
+        <button class="admin-tab" type="button" data-admin-tab="editorView">Editor</button>
+        <button class="admin-tab" type="button" data-admin-tab="adminsView">Admins</button>
+        <button class="admin-tab" type="button" data-admin-tab="setupView">Setup</button>
+      </nav>
+
+      <section id="productsView" class="admin-view active">
+        <article class="panel-card">
+          <div class="admin-toolbar">
+            <div>
+              <h2>Productos cargados</h2>
+              <p class="small-muted">Editar acá no modifica las fichas PDF originales; modifica la ficha operativa de la app.</p>
+            </div>
+            <button class="soft-btn" type="button" id="reloadProductsBtn">Recargar</button>
+          </div>
+          <div id="adminProductList" class="product-list"></div>
+        </article>
+      </section>
+
+      <section id="editorView" class="admin-view">
+        <article class="panel-card">
+          <h2 id="editorTitle">Nuevo producto</h2>
+          <form id="productForm" class="form-grid">
+            <input type="hidden" name="id" />
+            <input type="hidden" name="dbId" />
+            <div class="form-grid three">
+              <label>Slug / ID<input name="slug" required placeholder="ej: bio-lav" /></label>
+              <label>Nombre<input name="name" required placeholder="Ej: BIO-LAV" /></label>
+              <label>Categoría<input name="category" required placeholder="Ej: Desinfección" /></label>
+            </div>
+            <div class="form-grid two">
+              <label>Tipo de producto<input name="type" placeholder="Ej: Lavandina concentrada" /></label>
+              <label>Validez<input name="validity" placeholder="Ej: 2 años" /></label>
+            </div>
+            <label>Descripción corta<textarea name="shortDescription" placeholder="Qué hace, dónde se usa y para qué sirve."></textarea></label>
+            <div class="form-grid two">
+              <label>Superficies / usos<textarea name="surfaces" placeholder="Una por línea o separadas por coma"></textarea></label>
+              <label>Fuente / ficha PDF<input name="source" placeholder="docs/ficha.pdf o URL" /></label>
+            </div>
+            <div class="form-grid two">
+              <label>Forma de uso<textarea name="instructions" placeholder="Una instrucción por línea"></textarea></label>
+              <label>Precauciones<textarea name="precautions" placeholder="Una precaución por línea"></textarea></label>
+            </div>
+            <div class="form-grid three">
+              <label>Estado<select name="status"><option value="active">Activo</option><option value="draft">Borrador</option><option value="archived">Archivado</option></select></label>
+              <label>Orden<input name="sortOrder" type="number" step="1" value="100" /></label>
+              <label>Listo para usar<select name="readyToUse"><option value="false">No, tiene dilución</option><option value="true">Sí, no se diluye</option></select></label>
+            </div>
+
+            <div class="dilution-editor">
+              <div class="admin-toolbar">
+                <div>
+                  <h3>Diluciones</h3>
+                  <p class="small-muted">Usá ml por 1 litro de agua. Ejemplo 1:40 = 25 ml/L.</p>
+                </div>
+                <button class="soft-btn" type="button" id="addDilutionBtn">Agregar dilución</button>
+              </div>
+              <div id="dilutionRows"></div>
+            </div>
+
+            <label>Presentaciones / packaging<textarea name="packaging" placeholder='Opcional. Una línea por presentación. Ej: 5 litros | Bidón | 4 unidades'></textarea></label>
+
+            <div class="admin-toolbar">
+              <div class="left">
+                <button class="primary-btn" type="submit">Guardar producto</button>
+                <button class="soft-btn" type="button" id="resetFormBtn">Limpiar</button>
+              </div>
+              <button class="danger-btn" type="button" id="deleteFromFormBtn" hidden>Eliminar</button>
+            </div>
+          </form>
+        </article>
+      </section>
+
+      <section id="adminsView" class="admin-view">
+        <article class="panel-card">
+          <div class="admin-toolbar">
+            <div>
+              <h2>Autorización de admins</h2>
+              <p class="small-muted">Disponible con Supabase. Solo superadmin puede aprobar, rechazar o elevar permisos.</p>
+            </div>
+            <button class="soft-btn" type="button" id="reloadAdminsBtn">Recargar admins</button>
+          </div>
+          <div id="adminProfiles" class="profile-table"></div>
+        </article>
+      </section>
+
+      <section id="setupView" class="admin-view">
+        <article class="panel-card">
+          <h2>Configuración inicial</h2>
+          <div class="notice">
+            <strong>Orden recomendado:</strong> crear Supabase, ejecutar <code>supabase/schema.sql</code>, configurar <code>config.js</code>, crear tu usuario, aprobarlo con el SQL del README y después cargar la semilla inicial.
+          </div>
+          <div class="admin-toolbar" style="margin-top:12px">
+            <button class="primary-btn" type="button" id="seedSupabaseBtn">Cargar productos iniciales en Supabase</button>
+            <button class="soft-btn" type="button" id="resetLocalBtn">Resetear datos locales</button>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="passwordDialog" class="help-dialog">
+    <button class="dialog-close" type="button" data-close-password aria-label="Cerrar">×</button>
+    <h2>Cambiar contraseña</h2>
+    <form id="passwordForm" class="form-grid">
+      <label>Nueva contraseña<input name="password" type="password" autocomplete="new-password" minlength="8" required /></label>
+      <button class="primary-btn" type="submit">Actualizar</button>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="data.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

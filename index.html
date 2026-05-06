@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
+  <title>Clean It | Diluciones</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/logo.svg" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="app-body">
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="Inicio">
+      <span class="brand-mark">CI</span>
+      <span>
+        <strong>Clean It</strong>
+        <small>Diluciones y fichas rápidas</small>
+      </span>
+    </a>
+    <nav class="top-actions" aria-label="Acciones principales">
+      <button class="ghost-btn" type="button" data-open-help>Ayuda</button>
+      <a class="admin-link" href="admin.html">Admin</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero section-pad">
+      <div class="hero-copy">
+        <p class="eyebrow">Operación segura · Cálculo automático</p>
+        <h1>Prepará cada producto con la dosis correcta, sin hacer cuentas.</h1>
+        <p class="hero-text">Buscá el producto, elegí el tipo de limpieza y cargá el recipiente. La app calcula cuántos ml de producto usar y te muestra instrucciones críticas de uso.</p>
+      </div>
+      <div class="hero-card" aria-label="Resumen de seguridad">
+        <span class="status-dot"></span>
+        <strong>Regla operativa</strong>
+        <p>Las dosis se calculan sobre litros de agua, tal como indican las fichas técnicas. Los productos listos para usar no se diluyen.</p>
+      </div>
+    </section>
+
+    <section class="quick-calculator section-pad" id="calculadora">
+      <div class="section-title-row">
+        <div>
+          <p class="eyebrow">Calculadora rápida</p>
+          <h2>¿Cuánto producto va en el recipiente?</h2>
+        </div>
+        <span class="calc-badge">ml exactos</span>
+      </div>
+
+      <div class="calculator-panel">
+        <label>
+          Producto
+          <select id="quickProductSelect"></select>
+        </label>
+        <label>
+          Uso / Dilución
+          <select id="quickDilutionSelect"></select>
+        </label>
+        <div class="inline-fields">
+          <label>
+            Cantidad
+            <input id="quickVolume" type="number" min="0" step="0.1" value="5" inputmode="decimal" />
+          </label>
+          <label>
+            Unidad
+            <select id="quickUnit">
+              <option value="l">litros</option>
+              <option value="ml">ml</option>
+            </select>
+          </label>
+        </div>
+        <label>
+          Base del cálculo
+          <select id="quickMode">
+            <option value="water">Tengo esta cantidad de agua</option>
+            <option value="final">Quiero preparar esta cantidad final</option>
+          </select>
+        </label>
+        <div class="result-card" id="quickResult" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="section-pad controls-section">
+      <div class="search-card">
+        <label class="search-label" for="searchInput">Buscar producto, superficie o precaución</label>
+        <div class="search-box">
+          <input id="searchInput" type="search" placeholder="Ej: baño, pisos, lavandina, acero inoxidable..." autocomplete="off" />
+          <button class="clear-btn" type="button" id="clearSearch" aria-label="Limpiar búsqueda">×</button>
+        </div>
+      </div>
+      <div class="chips" id="categoryChips" aria-label="Filtros de categoría"></div>
+    </section>
+
+    <section class="section-pad product-section">
+      <div class="section-title-row compact">
+        <div>
+          <p class="eyebrow">Productos cargados</p>
+          <h2>Fichas operativas</h2>
+        </div>
+        <span class="counter" id="productCounter"></span>
+      </div>
+      <div id="productGrid" class="product-grid"></div>
+      <div id="emptyState" class="empty-state" hidden>
+        <strong>No encontré productos con ese filtro.</strong>
+        <p>Probá buscando por nombre, superficie, categoría o palabra de la precaución.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer section-pad">
+    <div>
+      <strong>Uso interno operativo</strong>
+      <p>La app ordena la información de fichas técnicas. Ante duda, prevalece la ficha original del fabricante y el protocolo interno de Clean It.</p>
+    </div>
+    <a href="admin.html">Panel de administración</a>
+  </footer>
+
+  <dialog id="productDialog" class="product-dialog">
+    <button class="dialog-close" type="button" data-close-dialog aria-label="Cerrar">×</button>
+    <div id="dialogContent"></div>
+  </dialog>
+
+  <dialog id="helpDialog" class="help-dialog">
+    <button class="dialog-close" type="button" data-close-help aria-label="Cerrar">×</button>
+    <h2>Cómo usar la app</h2>
+    <ol class="help-list">
+      <li>Elegí el producto y el tipo de uso.</li>
+      <li>Ingresá el tamaño del recipiente en litros o ml.</li>
+      <li>Usá la cantidad de producto indicada por la calculadora.</li>
+      <li>Revisá siempre precauciones: mezcla prohibida, EPP y tiempo de contacto.</li>
+    </ol>
+    <div class="warning-box">
+      <strong>Importante:</strong> no improvisar mezclas. Si una ficha dice “no mezclar”, es no mezclar. La química no negocia.
+    </div>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

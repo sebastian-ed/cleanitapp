@@ -1,0 +1,11 @@
+{
+  "name": "Clean It Diluciones",
+  "short_name": "Diluciones",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f7f6",
+  "theme_color": "#0f766e",
+  "icons": [
+    { "src": "assets/logo.svg", "sizes": "128x128", "type": "image/svg+xml" }
+  ]
+}
