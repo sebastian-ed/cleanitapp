@@ -1,6 +1,6 @@
 # Clean It | Web app de diluciones y fichas técnicas
 
-Web app mobile-first para que los operarios consulten productos, dosis, tablas de preparación, formas de uso y precauciones críticas. Incluye una vista pública y un panel admin con login para editar productos, diluciones y permisos.
+Web app mobile-first para que los operarios consulten productos, dosis, tablas de preparación, formas de uso y precauciones críticas. Incluye vista pública y panel admin con login Supabase para editar productos, diluciones y permisos.
 
 ## Qué incluye
 
@@ -8,34 +8,43 @@ Web app mobile-first para que los operarios consulten productos, dosis, tablas d
 - `admin.html`: panel de administración.
 - `styles.css`: UI responsive mobile-first.
 - `app.js`: lógica pública, búsqueda, filtros, calculadora y fichas.
-- `admin.js`: login, CRUD de productos, carga inicial, permisos admin y cambio de contraseña.
-- `data.js`: productos iniciales extraídos de las fichas técnicas cargadas.
+- `admin.js`: login, CRUD de productos, carga de catálogo, permisos admin y cambio de contraseña.
+- `data.js`: catálogo base extraído de las fichas técnicas cargadas.
 - `config.js`: credenciales de Supabase y configuración general.
 - `docs/`: fichas técnicas PDF incluidas para abrir desde la app.
 - `supabase/schema.sql`: base de datos, RLS, perfiles admin y políticas de seguridad.
+- `supabase/upsert_new_products.sql`: script para insertar/actualizar solo los productos agregados en esta versión.
 
-## Modo rápido para probar sin backend
+## Productos agregados en esta versión
 
-1. Subí la carpeta a GitHub Pages o abrí `index.html` localmente.
-2. La vista pública funciona con los productos iniciales guardados en `localStorage`.
-3. Para entrar al panel admin en modo demo:
-   - Email: `admin@local`
-   - Contraseña: `admin123`
+- RAPID PLUS GEL CON LAVANDINA: listo para usar.
+- BIO-ULTRA: diluciones 1:20, 1:30 y 1:50.
+- STEEL SHINE: listo para usar.
+- WOOD: listo para usar.
 
-Ese modo local sirve para validar la UI. No sirve como sistema real de administración porque cualquier dato queda en el navegador del dispositivo.
+## Configuración con Supabase
 
-## Configuración recomendada con Supabase
+Esta versión no usa modo local. Si `config.js` no tiene credenciales Supabase, la app no va a operar.
 
-### 1. Crear proyecto
+### 1. Conservar credenciales
 
-Creá un proyecto en Supabase y copiá:
+Si ya tenés la app funcionando, copiá tus valores actuales de `config.js` antes de reemplazar archivos:
 
-- Project URL
-- anon public key
+```js
+window.APP_CONFIG = {
+  APP_NAME: 'Clean It | Diluciones',
+  SUPABASE_URL: 'https://TU_PROYECTO.supabase.co',
+  SUPABASE_ANON_KEY: 'TU_ANON_KEY',
+  DEFAULT_VOLUME_MODE: 'water',
+  CONTACTS: { /* ... */ }
+};
+```
 
-### 2. Ejecutar el SQL
+La `anon public key` puede estar en front-end. No publiques la `service_role key`.
 
-En Supabase, entrá a SQL Editor y ejecutá completo:
+### 2. Si instalás desde cero
+
+En Supabase SQL Editor, ejecutá:
 
 ```sql
 supabase/schema.sql
@@ -48,21 +57,7 @@ Eso crea:
 - políticas RLS
 - trigger que crea un perfil pendiente cuando alguien se registra
 
-### 3. Configurar `config.js`
-
-Abrí `config.js` y pegá tus credenciales:
-
-```js
-window.APP_CONFIG = {
-  APP_NAME: 'Clean It | Diluciones',
-  SUPABASE_URL: 'https://TU_PROYECTO.supabase.co',
-  SUPABASE_ANON_KEY: 'TU_ANON_KEY',
-  DEFAULT_VOLUME_MODE: 'water',
-  CONTACTS: { /* ... */ }
-};
-```
-
-### 4. Crear tu primer admin
+### 3. Primer admin
 
 1. Abrí `admin.html`.
 2. Creá tu cuenta con email y contraseña.
@@ -76,13 +71,38 @@ where email = 'TU_EMAIL_ADMIN@DOMINIO.COM';
 
 4. Volvé a `admin.html` e ingresá.
 
-### 5. Cargar productos iniciales
+## Cómo cargar los productos nuevos
 
-En el panel admin, pestaña `Setup`, tocá:
+### Opción A — Desde el panel admin
 
-`Cargar productos iniciales en Supabase`
+Entrá a:
 
-Desde ese momento la vista pública lee los productos activos desde Supabase.
+`Admin > Setup > Cargar solo productos nuevos`
+
+Ese botón toma únicamente los productos definidos en `window.NEW_PRODUCT_IDS` dentro de `data.js` y los inserta/actualiza en Supabase.
+
+### Opción B — Desde SQL
+
+Si preferís hacerlo directo en Supabase, ejecutá:
+
+```sql
+supabase/upsert_new_products.sql
+```
+
+Este script inserta/actualiza solo:
+
+- `rapid-plus-gel-lavandina`
+- `bio-ultra`
+- `steel-shine`
+- `wood`
+
+## Catálogo completo
+
+En `Admin > Setup` también existe:
+
+`Actualizar catálogo completo`
+
+Usalo con criterio. Hace `upsert` de todos los productos base de `data.js`. Si ya editaste productos manualmente desde el panel, puede sobrescribir esos campos. Para una base existente, conviene usar primero `Cargar solo productos nuevos`.
 
 ## Permisos admin
 
@@ -90,7 +110,7 @@ Desde ese momento la vista pública lee los productos activos desde Supabase.
 - Queda con estado `pending`.
 - Un superadmin lo aprueba desde la pestaña `Admins`.
 - Los admins aprobados pueden editar productos.
-- Solo el superadmin debería aprobar otros admins.
+- Solo un superadmin debería aprobar otros admins.
 
 ## Cómo calcula la app
 
@@ -121,7 +141,7 @@ Desde el panel admin:
 
 - Los productos listos para usar no generan cálculo de dilución.
 - Las precauciones críticas están visibles en tarjetas y en ficha completa.
-- No se debe mezclar productos salvo que la ficha técnica y el protocolo interno lo indiquen de forma explícita.
+- No se deben mezclar productos salvo indicación explícita de la ficha técnica y del protocolo interno.
 - Ante duda, prevalece la ficha técnica original del fabricante.
 
 ## Deploy en GitHub Pages
@@ -146,11 +166,3 @@ En Supabase:
 `Authentication > URL Configuration`
 
 Agregá como Site URL la URL de tu app. Si usás GitHub Pages o Netlify, agregá también esa URL en Redirect URLs.
-
-## Seguridad mínima recomendada
-
-- Cambiar la contraseña inicial desde el panel.
-- Usar Supabase para producción.
-- No dejar el proyecto en modo local para operación real.
-- Aprobar manualmente cada admin.
-- No publicar la service role key. Solo va la anon public key.

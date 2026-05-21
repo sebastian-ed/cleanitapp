@@ -1,6 +1,6 @@
 window.APP_CONFIG = {
   APP_NAME: 'Clean It | Diluciones',
-  // Pegá tus credenciales de Supabase cuando tengas el proyecto creado.
+  // Pegá acá tus credenciales de Supabase. Esta versión no usa modo local.
   // Ejemplo:
   // SUPABASE_URL: 'https://xxxxxxxx.supabase.co',
   // SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIs...'

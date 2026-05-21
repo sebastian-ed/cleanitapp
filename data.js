@@ -491,5 +491,228 @@ window.SEED_PRODUCTS = [
         "ean": "7798188651093"
       }
     ]
-  }
+  },
+      {
+          "id": "rapid-plus-gel-lavandina",
+          "name": "RAPID PLUS GEL CON LAVANDINA",
+          "category": "Baños y cocinas",
+          "type": "Limpiador en gel clorado",
+          "shortDescription": "Limpia y desengrasa baños y cocinas profundamente, sin dejar residuos. Ideal para superficies lavables como azulejos, pisos, mesadas, lavatorios e inodoros.",
+          "validity": "6 meses",
+          "readyToUse": true,
+          "status": "active",
+          "sortOrder": 90,
+          "source": "docs/45423_RAPID PLUS GEL CON LAVANDINA_compressed.pdf",
+          "sourceLabel": "Ficha técnica RAPID PLUS GEL CON LAVANDINA",
+          "surfaces": [
+              "Baños",
+              "Cocinas",
+              "Azulejos",
+              "Pisos",
+              "Mesadas",
+              "Lavatorios",
+              "Inodoros",
+              "Superficies lavables"
+          ],
+          "instructions": [
+              "Producto listo para usar. No diluir para el uso operativo estándar.",
+              "Verter sobre la superficie a limpiar o sobre un paño multiuso.",
+              "Distribuir y limpiar la superficie según nivel de suciedad.",
+              "En superficies en contacto con alimentos, enjuagar con abundante agua potable."
+          ],
+          "precautions": [
+              "Irritante para ojos y piel. Usar guantes y gafas durante la aplicación.",
+              "Usar en ambientes ventilados.",
+              "No comer, beber ni fumar mientras se manipula el producto.",
+              "En caso de contacto con ojos, enjuagar con abundante agua durante 15 minutos con los párpados levantados.",
+              "No mezclar con otros productos de limpieza, detergentes ni amoníaco: puede desprender vapores tóxicos.",
+              "No aplicar sobre alimentos, utensilios de cocina, plantas o acuarios.",
+              "Mantener en envase original y no reutilizar el envase."
+          ],
+          "dilutions": [],
+          "packaging": [
+              {
+                  "content": "500 ml",
+                  "presentation": "Botella",
+                  "units": "12 unidades por caja",
+                  "sku": "QUITLI31629000",
+                  "ean": "7798188651086"
+              }
+          ]
+      },
+      {
+          "id": "bio-ultra",
+          "name": "BIO-ULTRA",
+          "category": "Vajilla",
+          "type": "Detergente lavavajillas",
+          "shortDescription": "Detergente sintético de pH neutro, alto poder desengrasante y gran rendimiento. Apto para vajilla, fuentes, ollas y uso en establecimientos habilitados por SENASA.",
+          "validity": "2 años",
+          "readyToUse": false,
+          "status": "active",
+          "sortOrder": 100,
+          "source": "docs/19475_BIO-ULTRA SENASA_compressed.pdf",
+          "sourceLabel": "Ficha técnica BIO-ULTRA SENASA",
+          "surfaces": [
+              "Vajilla",
+              "Fuentes",
+              "Ollas",
+              "Utensilios",
+              "Superficies lavables"
+          ],
+          "instructions": [
+              "Se puede usar puro o diluir según el nivel de suciedad.",
+              "Diluir según las condiciones de la superficie o elemento a tratar.",
+              "Utilizar fibra, esponja o cepillo de fregar.",
+              "Enjuagar con abundante agua potable."
+          ],
+          "precautions": [
+              "Mantener fuera del alcance de niños y animales domésticos.",
+              "No comer, beber ni fumar mientras se manipula el producto.",
+              "Evitar el contacto con los ojos.",
+              "En contacto con la piel, lavar con abundante agua.",
+              "En caso de ingestión, no inducir el vómito; beber abundante agua y consultar llevando el envase o rótulo."
+          ],
+          "dilutions": [
+              {
+                  "id": "dificil",
+                  "label": "Limpieza difícil",
+                  "ratio": "1:20",
+                  "mlPerLiter": 50,
+                  "use": "Vajilla, ollas o fuentes con suciedad pesada",
+                  "contactTime": "Aplicación con fibra, esponja o cepillo",
+                  "rinse": "Enjuague obligatorio con agua potable"
+              },
+              {
+                  "id": "general",
+                  "label": "Limpieza general",
+                  "ratio": "1:30",
+                  "mlPerLiter": 33,
+                  "use": "Lavado operativo general",
+                  "contactTime": "Aplicación con fibra, esponja o cepillo",
+                  "rinse": "Enjuague obligatorio con agua potable"
+              },
+              {
+                  "id": "mantenimiento",
+                  "label": "Mantenimiento",
+                  "ratio": "1:50",
+                  "mlPerLiter": 20,
+                  "use": "Suciedad leve o mantenimiento",
+                  "contactTime": "Aplicación con fibra, esponja o cepillo",
+                  "rinse": "Enjuague obligatorio con agua potable"
+              }
+          ],
+          "packaging": [
+              {
+                  "content": "5 litros",
+                  "presentation": "Bidón",
+                  "units": "4 unidades por caja",
+                  "sku": "QUITDT313135L01",
+                  "ean": "7798188650331"
+              }
+          ]
+      },
+      {
+          "id": "steel-shine",
+          "name": "STEEL SHINE",
+          "category": "Acero inoxidable",
+          "type": "Abrillantador de acero inoxidable en aerosol",
+          "shortDescription": "Remueve suciedad y grasitud, deja brillo superior sin vetas ni aureolas y protege el área tratada con acción anti marcas. Ideal para metales de interior.",
+          "validity": "2 años",
+          "readyToUse": true,
+          "status": "active",
+          "sortOrder": 110,
+          "source": "docs/38625_STEEL SHINE AEROSOL_compressed.pdf",
+          "sourceLabel": "Ficha técnica STEEL SHINE AEROSOL",
+          "surfaces": [
+              "Acero inoxidable",
+              "Cromados",
+              "Aluminio",
+              "Metales de interior"
+          ],
+          "instructions": [
+              "Producto listo para usar. No diluir.",
+              "Agitar bien el envase antes de usar.",
+              "Apuntar el pulsador hacia la superficie a tratar manteniendo una distancia aproximada de 25 cm.",
+              "Pulverizar sobre la superficie o sobre un paño seco, preferentemente de bajo desprendimiento.",
+              "Frotar hasta lograr el brillo deseado. No enjuagar."
+          ],
+          "precautions": [
+              "Producto inflamable. No exponer a temperaturas mayores de 50 °C.",
+              "No pulverizar cerca del fuego ni sobre superficies calientes.",
+              "No perforar el envase aunque esté vacío, no arrojar al fuego y no rellenar.",
+              "Peligrosa su ingestión, inhalación o absorción por la piel.",
+              "Proteger los ojos durante la aplicación y usar en ambientes ventilados.",
+              "No pulverizar sobre alimentos, vajilla, utensilios de cocina, plantas, acuarios ni jaulas con animales.",
+              "No rociar en presencia de personas o animales domésticos.",
+              "No mezclar con otros productos. Guardar bajo llave."
+          ],
+          "dilutions": [],
+          "packaging": [
+              {
+                  "content": "400 ml",
+                  "presentation": "Aerosol",
+                  "units": "12 unidades por caja",
+                  "sku": "QUITLI316040000",
+                  "ean": "7798188650058"
+              }
+          ]
+      },
+      {
+          "id": "wood",
+          "name": "WOOD",
+          "category": "Muebles",
+          "type": "Lustra muebles en aerosol",
+          "shortDescription": "Limpia, da brillo y protege superficies tratadas del resecamiento. Ayuda a evitar adherencia de polvo, hollín, humedad y marcas de dedos.",
+          "validity": "2 años",
+          "readyToUse": true,
+          "status": "active",
+          "sortOrder": 120,
+          "source": "docs/72423_WOOD_compressed.pdf",
+          "sourceLabel": "Ficha técnica WOOD",
+          "surfaces": [
+              "Madera",
+              "Mármol",
+              "Laca",
+              "Metales",
+              "Cueros",
+              "Cuerinas",
+              "Tableros de automóviles",
+              "Televisores",
+              "Heladeras",
+              "Teléfonos"
+          ],
+          "instructions": [
+              "Producto listo para usar. No diluir.",
+              "Agitar bien el envase antes de usar.",
+              "Aplicar de 10 a 15 cm de distancia del mueble u objeto a lustrar, presionando firmemente el pulsador por unos segundos.",
+              "Pasar un paño limpio para obtener brillo seco y uniforme.",
+              "En superficies de difícil acceso, aplicar directamente sobre el paño y luego pasar sobre la superficie."
+          ],
+          "precautions": [
+              "Producto inflamable con hidrocarburos. Mantener lejos del fuego y superficies calientes.",
+              "No exponer a temperaturas mayores de 50 °C, no arrojar al fuego y no perforar.",
+              "Prohibido rellenar el envase. No dejar dentro de vehículos expuestos al sol.",
+              "No mezclar con otros productos.",
+              "No inhalar. Usar en ambientes ventilados.",
+              "No comer, beber ni fumar mientras se manipula el producto.",
+              "Se recomienda usar guantes. En contacto con ojos o piel, lavar con abundante agua."
+          ],
+          "dilutions": [],
+          "packaging": [
+              {
+                  "content": "360 ml",
+                  "presentation": "Aerosol",
+                  "units": "12 unidades por caja",
+                  "sku": "QUIJLU21701WOOD",
+                  "ean": "7798188650379"
+              }
+          ]
+      }
+];
+
+window.NEW_PRODUCT_IDS = [
+  "rapid-plus-gel-lavandina",
+  "bio-ultra",
+  "steel-shine",
+  "wood"
 ];

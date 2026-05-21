@@ -1,12 +1,8 @@
-const STORAGE_KEY = 'cleanit_diluciones_products_v1';
-const LOCAL_ADMIN = { email: 'admin@local', password: 'admin123' };
-
 const app = {
   client: null,
   user: null,
   profile: null,
   products: [],
-  localMode: false,
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -110,25 +106,8 @@ function toDb(product) {
   };
 }
 
-function getLocalProducts() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    try { return JSON.parse(saved); } catch { localStorage.removeItem(STORAGE_KEY); }
-  }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(window.SEED_PRODUCTS || []));
-  return JSON.parse(JSON.stringify(window.SEED_PRODUCTS || []));
-}
-
-function saveLocalProducts(products) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-}
-
 async function loadProducts() {
-  if (app.localMode) {
-    app.products = getLocalProducts().sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-    renderAdminProducts();
-    return;
-  }
+  if (!app.client) throw new Error('Falta configurar Supabase en config.js.');
   const { data, error } = await app.client.from('products').select('*').order('sort_order', { ascending: true });
   if (error) throw error;
   app.products = (data || []).map(fromDb);
@@ -286,16 +265,7 @@ async function saveProduct(event) {
   if (!product.name) return showError('Falta el nombre del producto.');
   if (!product.readyToUse && !product.dilutions.length) return showError('Si el producto no es listo para usar, cargá al menos una dilución.');
 
-  if (app.localMode) {
-    const index = app.products.findIndex((p) => p.id === ($('#productForm').elements.id.value || product.id));
-    if (index >= 0) app.products[index] = product; else app.products.push(product);
-    app.products.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-    saveLocalProducts(app.products);
-    renderAdminProducts();
-    showSuccess('Producto guardado en modo local.');
-    switchTab('productsView');
-    return;
-  }
+  if (!app.client) return showError('Falta configurar Supabase en config.js.');
 
   const payload = toDb(product);
   let result;
@@ -315,14 +285,7 @@ async function deleteProduct(slug) {
   if (!product) return;
   if (!confirm(`¿Eliminar ${product.name}? Esta acción no conviene usarla como archivo histórico.`)) return;
 
-  if (app.localMode) {
-    app.products = app.products.filter((p) => p.id !== slug);
-    saveLocalProducts(app.products);
-    renderAdminProducts();
-    clearForm();
-    showSuccess('Producto eliminado en modo local.');
-    return;
-  }
+  if (!app.client) return showError('Falta configurar Supabase en config.js.');
 
   const { error } = await app.client.from('products').delete().eq('id', product.dbId);
   if (error) return showError(error.message);
@@ -331,19 +294,31 @@ async function deleteProduct(slug) {
   clearForm();
 }
 
-async function seedSupabase() {
-  if (app.localMode) return showError('No hay Supabase configurado. Pegá las credenciales en config.js primero.');
-  const rows = (window.SEED_PRODUCTS || []).map(toDb);
+async function upsertProducts(products, successMessage) {
+  if (!app.client) return showError('Falta configurar Supabase en config.js.');
+  const rows = (products || []).map(toDb);
+  if (!rows.length) return showError('No hay productos para cargar.');
   const { error } = await app.client.from('products').upsert(rows, { onConflict: 'slug' });
   if (error) return showError(error.message);
-  showSuccess('Productos iniciales cargados en Supabase.');
+  showSuccess(successMessage);
   await loadProducts();
+}
+
+async function seedSupabase() {
+  if (!confirm('Esto cargará o actualizará todos los productos base desde data.js. Si editaste productos manualmente, puede sobrescribir esos campos.')) return;
+  await upsertProducts(window.SEED_PRODUCTS || [], 'Catálogo completo cargado/actualizado en Supabase.');
+}
+
+async function seedNewProducts() {
+  const ids = new Set(window.NEW_PRODUCT_IDS || []);
+  const products = (window.SEED_PRODUCTS || []).filter((product) => ids.has(product.id));
+  await upsertProducts(products, 'Productos nuevos cargados/actualizados en Supabase.');
 }
 
 async function loadAdmins() {
   const box = $('#adminProfiles');
-  if (app.localMode) {
-    box.innerHTML = '<div class="notice">La administración de usuarios requiere Supabase. En modo local no hay autorización real de cuentas.</div>';
+  if (!app.client) {
+    box.innerHTML = '<div class="notice">Configurá Supabase para administrar usuarios.</div>';
     return;
   }
   const { data, error } = await app.client.from('admin_profiles').select('*').order('created_at', { ascending: false });
@@ -391,7 +366,6 @@ async function updateAdmin(userId, patch) {
 }
 
 async function getProfile() {
-  if (app.localMode) return { user_id: 'local', email: LOCAL_ADMIN.email, role: 'superadmin', status: 'approved' };
   const { data, error } = await app.client.from('admin_profiles').select('*').eq('user_id', app.user.id).maybeSingle();
   if (error) throw error;
   return data;
@@ -410,15 +384,15 @@ async function enterAdmin() {
   $('#pendingSection').hidden = true;
   $('#adminShell').classList.add('active');
   $('#logoutBtn').hidden = false;
-  $('#adminIdentity').textContent = `${app.profile.email || app.user?.email || LOCAL_ADMIN.email} · ${app.profile.role}`;
-  $('#backendStatus').textContent = app.localMode ? 'Modo local' : 'Supabase conectado';
+  $('#adminIdentity').textContent = `${app.profile.email || app.user?.email || 'admin'} · ${app.profile.role}`;
+  $('#backendStatus').textContent = 'Supabase conectado';
   await loadProducts();
   await loadAdmins();
   clearForm();
 }
 
 async function logout() {
-  if (!app.localMode && app.client) await app.client.auth.signOut();
+  if (app.client) await app.client.auth.signOut();
   app.user = null;
   app.profile = null;
   $('#authSection').hidden = false;
@@ -433,14 +407,7 @@ async function login(event) {
   const email = String(form.get('email')).trim();
   const password = String(form.get('password'));
 
-  if (app.localMode) {
-    if (email === LOCAL_ADMIN.email && password === LOCAL_ADMIN.password) {
-      app.user = { id: 'local', email };
-      await enterAdmin();
-      return;
-    }
-    return showError('Credenciales locales incorrectas. Usá admin@local / admin123 o configurá Supabase.');
-  }
+  if (!app.client) return showError('Falta configurar Supabase en config.js.');
 
   const { data, error } = await app.client.auth.signInWithPassword({ email, password });
   if (error) return showError(error.message);
@@ -454,7 +421,7 @@ async function signup(event) {
   const email = String(form.get('email')).trim();
   const password = String(form.get('password'));
 
-  if (app.localMode) return showError('La creación real de admins requiere Supabase.');
+  if (!app.client) return showError('Falta configurar Supabase en config.js.');
 
   const { error } = await app.client.auth.signUp({ email, password });
   if (error) return showError(error.message);
@@ -464,10 +431,7 @@ async function signup(event) {
 async function changePassword(event) {
   event.preventDefault();
   const password = new FormData(event.currentTarget).get('password');
-  if (app.localMode) {
-    $('#passwordDialog').close();
-    return showError('En modo local la contraseña demo no se modifica. Configurá Supabase para usar esta función.');
-  }
+  if (!app.client) return showError('Falta configurar Supabase en config.js.');
   const { error } = await app.client.auth.updateUser({ password });
   if (error) return showError(error.message);
   $('#passwordDialog').close();
@@ -490,12 +454,7 @@ function wireEvents() {
     if (slug) deleteProduct(slug);
   });
   $('#seedSupabaseBtn').addEventListener('click', seedSupabase);
-  $('#resetLocalBtn').addEventListener('click', () => {
-    if (!confirm('¿Resetear datos locales y volver a la semilla inicial?')) return;
-    saveLocalProducts(window.SEED_PRODUCTS || []);
-    loadProducts();
-    showSuccess('Datos locales reseteados.');
-  });
+  $('#seedNewProductsBtn').addEventListener('click', seedNewProducts);
   $('#reloadAdminsBtn').addEventListener('click', loadAdmins);
   $('#changePasswordBtn').addEventListener('click', () => $('#passwordDialog').showModal());
   $('[data-close-password]').addEventListener('click', () => $('#passwordDialog').close());
@@ -509,21 +468,23 @@ function wireEvents() {
 
 async function init() {
   app.client = makeClient();
-  app.localMode = !app.client;
-  $('#demoHint').textContent = app.localMode
-    ? 'Modo demo local: admin@local / admin123. No uses esto en producción.'
-    : 'Supabase detectado. Ingresá con tu cuenta aprobada.';
+  $('#demoHint').textContent = app.client
+    ? 'Supabase detectado. Ingresá con tu cuenta aprobada.'
+    : 'Falta configurar Supabase en config.js. Esta versión no usa modo local.';
   wireEvents();
-  if (!app.localMode) {
-    const { data } = await app.client.auth.getSession();
-    if (data.session?.user) {
-      app.user = data.session.user;
-      await enterAdmin();
-    }
-    app.client.auth.onAuthStateChange((_event, session) => {
-      app.user = session?.user || null;
-    });
+  if (!app.client) {
+    showError('Falta configurar Supabase en config.js.');
+    clearForm();
+    return;
   }
+  const { data } = await app.client.auth.getSession();
+  if (data.session?.user) {
+    app.user = data.session.user;
+    await enterAdmin();
+  }
+  app.client.auth.onAuthStateChange((_event, session) => {
+    app.user = session?.user || null;
+  });
   clearForm();
 }
 

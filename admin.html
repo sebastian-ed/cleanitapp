@@ -27,7 +27,7 @@
     <section class="admin-hero">
       <p class="eyebrow">Panel de control</p>
       <h1>Gestión de productos y dosis.</h1>
-      <p>Acá ajustás fichas, diluciones y permisos. En producción conviene usar Supabase; el modo local es útil para revisar la app, no para operar en serio.</p>
+      <p>Acá ajustás fichas, diluciones y permisos. Esta versión trabaja contra Supabase: las ediciones quedan centralizadas y disponibles para todos los operarios.</p>
     </section>
 
     <div id="globalError" class="error-msg"></div>
@@ -163,12 +163,13 @@
         <article class="panel-card">
           <h2>Configuración inicial</h2>
           <div class="notice">
-            <strong>Orden recomendado:</strong> crear Supabase, ejecutar <code>supabase/schema.sql</code>, configurar <code>config.js</code>, crear tu usuario, aprobarlo con el SQL del README y después cargar la semilla inicial.
+            <strong>Orden recomendado:</strong> si ya tenés Supabase funcionando, subí esta versión, conservá tus credenciales de <code>config.js</code> y cargá solo los productos nuevos. Si estás instalando desde cero, ejecutá <code>supabase/schema.sql</code> y luego cargá el catálogo completo.
           </div>
           <div class="admin-toolbar" style="margin-top:12px">
-            <button class="primary-btn" type="button" id="seedSupabaseBtn">Cargar productos iniciales en Supabase</button>
-            <button class="soft-btn" type="button" id="resetLocalBtn">Resetear datos locales</button>
+            <button class="primary-btn" type="button" id="seedNewProductsBtn">Cargar solo productos nuevos</button>
+            <button class="soft-btn" type="button" id="seedSupabaseBtn">Actualizar catálogo completo</button>
           </div>
+          <p class="small-muted">Para una base existente, usá primero “Cargar solo productos nuevos”. El catálogo completo puede sobrescribir campos si ya los editaste manualmente.</p>
         </article>
       </section>
     </section>

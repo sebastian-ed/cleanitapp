@@ -1,10 +1,9 @@
-const CACHE_NAME = 'cleanit-diluciones-v1';
+const CACHE_NAME = 'cleanit-diluciones-v2';
 const ASSETS = [
   './',
   './index.html',
   './admin.html',
   './styles.css',
-  './config.js',
   './data.js',
   './app.js',
   './admin.js',

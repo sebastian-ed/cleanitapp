@@ -1,4 +1,3 @@
-const STORAGE_KEY = 'cleanit_diluciones_products_v1';
 const STANDARD_CONTAINERS = [
   { label: 'Botella 500 ml', ml: 500 },
   { label: 'Pulverizador 750 ml', ml: 750 },
@@ -63,23 +62,18 @@ function fromDb(row) {
 
 async function loadProducts() {
   const client = getClient();
-  if (client) {
-    const { data, error } = await client
-      .from('products')
-      .select('*')
-      .eq('status', 'active')
-      .order('sort_order', { ascending: true });
-    if (!error && data?.length) return data.map(fromDb);
-    console.warn('Supabase no devolvió productos activos. Se usa semilla local.', error);
+  if (!client) {
+    throw new Error('Falta configurar Supabase en config.js. Esta versión no usa modo local.');
   }
 
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) {
-    try { return JSON.parse(saved).filter((p) => p.status !== 'archived'); }
-    catch { localStorage.removeItem(STORAGE_KEY); }
-  }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(window.SEED_PRODUCTS || []));
-  return (window.SEED_PRODUCTS || []).filter((p) => p.status !== 'archived');
+  const { data, error } = await client
+    .from('products')
+    .select('*')
+    .eq('status', 'active')
+    .order('sort_order', { ascending: true });
+
+  if (error) throw error;
+  return (data || []).map(fromDb);
 }
 
 function normalizeText(text) {
